@@ -234,49 +234,19 @@ def _lex_and_print(source: str) -> None:
         print(f"LexError: {e}")
 
 
-def _run_repl() -> None:
-    print("Traitor Lexer REPL  (type 'exit' to quit, 'multi' for multi-line mode)")
-    while True:
-        try:
-            line = input(">>> ").rstrip("\n")
-        except (EOFError, KeyboardInterrupt):
-            print()
-            break
-
-        if line.strip() == "exit":
-            break
-
-        if line.strip() == "multi":
-            print("(multi-line mode: enter a blank line to submit)")
-            lines: List[str] = []
-            while True:
-                try:
-                    part = input("... ")
-                except (EOFError, KeyboardInterrupt):
-                    print()
-                    break
-                if part == "":
-                    break
-                lines.append(part)
-            _lex_and_print("\n".join(lines))
-        else:
-            _lex_and_print(line)
-
-# Entry point  (python lexer.py [file]  |  python lexer.py --repl)
+# Entry point  (python lexer.py <file>)
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) == 2:
-        # Lex a source file passed on the command line
-        path = sys.argv[1]
-        try:
-            with open(path, encoding="utf-8") as fh:
-                source = fh.read()
-        except OSError as e:
-            print(f"Error reading file: {e}")
-            sys.exit(1)
-        _lex_and_print(source)
+    if len(sys.argv) != 2:
+        print("Usage: python lexer.py <source_file>")
+        sys.exit(1)
 
-    else:
-        # Default: interactive REPL
-        _run_repl()
+    path = sys.argv[1]
+    try:
+        with open(path, encoding="utf-8") as fh:
+            source = fh.read()
+    except OSError as e:
+        print(f"Error reading file: {e}")
+        sys.exit(1)
+    _lex_and_print(source)
