@@ -157,7 +157,7 @@ class BooleanExp(PrimaryExp):
 @dataclass
 class SelfExp(PrimaryExp): pass
 
-# Parenthesized expression?
+# Parenthesized expression
 @dataclass
 class ParenExp(PrimaryExp):
     exp: Exp
