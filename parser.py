@@ -173,7 +173,7 @@ class Parser:
             self._advance()
             return SelfType()
 
-        # Struct type (identifier)
+        # Identifier
         if tok.kind == TokenKind.IDENTIFIER:
             self._advance()
             return StructType(structname=tok.value)
