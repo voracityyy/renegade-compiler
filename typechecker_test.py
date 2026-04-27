@@ -251,6 +251,44 @@ class TestValidPrograms:
     def test_while_with_body(self):
         check("let x: Int = 0; while (true) { x = 1; }")
 
+    def test_method_body_self_field_access(self):
+        check("""
+            struct Point { x: Int, y: Int }
+            trait HasX { method get_x(): Int; }
+            impl HasX for Point {
+                method get_x(): Int { return self.x; }
+            }
+            let p: Point = new Point { x: 5, y: 3 };
+            let n: Int = p.get_x();
+        """)
+
+    def test_function_calls_another_function(self):
+        check("""
+            func double(x: Int): Int { return x; }
+            func quad(x: Int): Int { return double(x); }
+        """)
+
+    def test_struct_as_function_parameter(self):
+        check("""
+            struct Point { x: Int, y: Int }
+            func get_x(p: Point): Int { return p.x; }
+        """)
+
+    def test_println_with_struct(self):
+        check("struct S { val: Int } let s: S = new S { val: 1 }; println(s);")
+
+    def test_nested_while_break_inner(self):
+        check("""
+            while (true) {
+                while (true) {
+                    break;
+                }
+            }
+        """)
+
+    def test_return_inside_if_in_function(self):
+        check("func f(): Int { if (true) { return 1; } return 2; }")
+
 # Type errors
 class TestTypeErrors:
 
@@ -388,6 +426,18 @@ class TestTypeErrors:
             trait T { method foo(a: Self, b: Self): Self; }
             impl T for Int { method foo(a: Int): Int { return self; } }
         """)
+
+    def test_return_value_in_void_func(self):
+        check_error("func f(): Void { return 1; }")
+
+    def test_block_scope_variable_not_visible_outside(self):
+        check_error("{ let x: Int = 1; } x;")
+
+    def test_impl_for_unknown_struct(self):
+        check_error("trait T { } impl T for Unknown { }")
+
+    def test_trait_method_unknown_struct_return_type(self):
+        check_error("trait T { method foo(): Unknown; }")
 
 class TestAdditionalCoverage:
 
